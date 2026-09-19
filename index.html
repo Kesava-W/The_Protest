@@ -226,7 +226,7 @@ footer{
      class="cover-image">
 
 <div class="start-reading">
-<a href="chapter.html?file=chapter1">
+<a id="startReading" href="chapter.html?file=chapter1">
 Start Reading
 </a>
 </div>
@@ -339,16 +339,7 @@ Loyalty
 
 <h2>Chapters</h2>
 
-<div class="chapter-list">
-
-<a href="chapter.html?file=chapter1">Chapter 1 – The Catalyst</a>
-<a href="chapter.html?file=chapter2">Chapter 2 – The Infiltration</a>
-<a href="chapter.html?file=chapter3">Chapter 3 – The Crackdown</a>
-<a href="chapter.html?file=chapter4">Chapter 4 – The Informer Revealed</a>
-<a href="chapter.html?file=chapter5">Chapter 5 – The Confession</a>
-<a href="chapter.html?file=chapter6">Chapter 6 – The Vows We Keep</a>
-
-</div>
+<div class="chapter-list" id="chapterList"></div>
 
 </section>
 
@@ -357,6 +348,56 @@ Loyalty
 <footer>
 © 2026 Kesava Nittala
 </footer>
+
+<script>
+
+const list = document.getElementById("chapterList");
+
+fetch("chapters.json")
+.then(response => {
+
+    if(!response.ok){
+        throw new Error("Chapter list not found");
+    }
+
+    return response.json();
+
+})
+.then(chapters => {
+
+    const start = document.getElementById("startReading");
+
+    if(start && chapters.length){
+        start.href = `chapter.html?file=${encodeURIComponent(chapters[0].file)}`;
+    }
+
+    chapters.forEach(c => {
+
+        const a = document.createElement("a");
+        a.href = `chapter.html?file=${encodeURIComponent(c.file)}`;
+
+        const parts = c.title.split(" – ");
+        a.appendChild(document.createTextNode(parts[0]));
+
+        if(parts.length > 1){
+            const span = document.createElement("span");
+            span.className = "location";
+            span.textContent = " – " + parts.slice(1).join(" – ");
+            a.appendChild(span);
+        }
+
+        list.appendChild(a);
+
+    });
+
+})
+.catch(() => {
+
+    list.textContent = "Chapters could not be loaded.";
+
+});
+
+</script>
 
 <script src="feedback.js" data-story="The Protest"></script>
 
